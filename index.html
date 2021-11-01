@@ -148,21 +148,30 @@
         </div>
         <div class="row">
           <div class="col-sm-8 offset-sm-2">
-            <form>
+            <div class="alert alert-primary alert-dismissible fade show d-none" role="alert">
+              <strong>Thank you!</strong> Your message has been sent.
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <form name="portfolio-contact-form">
               <div class="mb-3">
                 <label for="nama" class="form-label">Name</label>
-                <input type="text" class="form-control" id="nama" placeholder="Input name" />
+                <input type="text" class="form-control" id="nama" placeholder="Input name" name="name"/>
               </div>
               <div class="mb-3">
                 <label for="email" class="form-label">Email address</label>
-                <input type="email" class="form-control" id="email" placeholder="Input email" />
+                <input type="email" class="form-control" id="email" placeholder="Input email" name="email"/>
               </div>
               <div class="mb-3">
                 <label for="message" class="form-label">Message</label>
-                <textarea class="form-control" id="message" placeholder="Input message"></textarea>
+                <textarea class="form-control" id="message" placeholder="Input message" name="message"></textarea>
               </div>
               <div class="col-12">
-                <button class="btn btn-primary" type="submit">Send</button>
+                <button class="btn btn-primary btn-send" type="submit">Send</button>
+
+                <button class="btn btn-primary btn-loading d-none" type="button" disabled>
+                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  <span class="visually-hidden">Loading...</span>
+                </button>
               </div>
             </form>
           </div>
@@ -189,5 +198,34 @@
 
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+    <script>
+      const scriptURL = 'https://script.google.com/macros/s/AKfycbzEMnIEgSrXlyyZT-ukT17WJrEMOWYIsXroJrhEPQRSElX2SujjgBQGsZO42zoTbGQ/exec'
+      const form = document.forms['portfolio-contact-form']
+      const btnSend = document.querySelector('.btn-send')
+      const btnLoading = document.querySelector('.btn-loading')
+      const myAlert = document.querySelector('.alert')
+    
+      form.addEventListener('submit', e => {
+        e.preventDefault()
+
+        // ketika tombol send diklik
+        // tampilkan tombol loading, hilangkan tombol kirim
+        btnLoading.classList.toggle('d-none')
+        btnSend.classList.toggle('d-none')
+        fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+          .then(response => {
+            // tampilkan tombol kirim, hilangkan tombol loading
+            btnLoading.classList.toggle('d-none')
+            btnSend.classList.toggle('d-none')
+            // tampilkan alert
+            myAlert.classList.toggle('d-none')
+            // reset form
+            form.reset()
+            console.log('Success!', response)
+          })
+          .catch(error => console.error('Error!', error.message))
+      })
+    </script>
   </body>
 </html>
