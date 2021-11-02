@@ -7,9 +7,15 @@
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" />
+
+    <!-- AOS -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+    <!-- my CSS -->
     <link rel="stylesheet" href="style.css" />
 
     <title>Portfolio | Bregsi AJ</title>
+    <!-- <link href="img/fotoku.jpg" rel="shortcut icon"> -->
   </head>
   <body>
     <!-- narbar -->
@@ -43,7 +49,7 @@
     <div class="jumbotron text-center">
       <img src="img/fotoku.jpg" alt="Bregsi's photo" width="200" class="rounded-circle img-thumb" />
       <h1 class="display-4">Bregsi Atingsari Julastri</h1>
-      <p class="lead">Informatics Student | Programmer</p>
+      <p class="lead"></p>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
         <path
           fill="#f7f7f7"
@@ -63,10 +69,10 @@
           </div>
         </div>
         <div class="row justify-content-center fs-5 text-center">
-          <div class="col-md-5">
+          <div class="col-md-5" data-aos="fade-right" data-aos-delay="50" data-aos-duration="1500">
             <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi repudiandae laborum ipsa. Fuga at, saepe magni distinctio qui dolores quis eaque quaerat error. Beatae, iste atque laboriosam veniam illo qui.</p>
           </div>
-          <div class="col-md-5">
+          <div class="col-md-5" data-aos="fade-left" data-aos-delay="100" data-aos-duration="1500">
             <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi sapiente sequi illum corporis modi, eius, blanditiis quo totam molestiae soluta eveniet corrupti nemo, in labore! Ea saepe repellendus quos iure.</p>
           </div>
         </div>
@@ -91,7 +97,7 @@
         </div>
         <div class="row">
           <div class="col-md-4 mb-3">
-            <div class="card">
+            <div class="card" data-aos="zoom-in" data-aos-delay="50">
               <img src="img/portfolio/1.jpg" class="card-img-top" alt="port1" />
               <div class="card-body">
                 <p class="card-text">e-commerce</p>
@@ -99,7 +105,7 @@
             </div>
           </div>
           <div class="col-md-4 mb-3">
-            <div class="card">
+            <div class="card" data-aos="zoom-in" data-aos-delay="100">
               <img src="img/portfolio/1.jpg" class="card-img-top" alt="port1" />
               <div class="card-body">
                 <p class="card-text">e-commerce</p>
@@ -107,7 +113,7 @@
             </div>
           </div>
           <div class="col-md-4 mb-3">
-            <div class="card">
+            <div class="card" data-aos="zoom-in" data-aos-delay="150">
               <img src="img/portfolio/1.jpg" class="card-img-top" alt="port1" />
               <div class="card-body">
                 <p class="card-text">e-commerce</p>
@@ -117,7 +123,7 @@
         </div>
         <div class="row justify-content-center">
           <div class="col-md-4 mb-3">
-            <div class="card">
+            <div class="card" data-aos="zoom-in" data-aos-delay="200">
               <img src="img/portfolio/1.jpg" class="card-img-top" alt="port1" />
               <div class="card-body">
                 <p class="card-text">e-commerce</p>
@@ -125,7 +131,7 @@
             </div>
           </div>
           <div class="col-md-4 mb-3">
-            <div class="card">
+            <div class="card" data-aos="zoom-in" data-aos-delay="250">
               <img src="img/portfolio/1.jpg" class="card-img-top" alt="port1" />
               <div class="card-body">
                 <p class="card-text">e-commerce</p>
@@ -198,6 +204,22 @@
 
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+      AOS.init({
+        once: false,
+        duration: 500,
+        delay: 200,
+      });
+    </script>  
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.8.0/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.8.0/TextPlugin.min.js"></script>
+    <script>
+      gsap.registerPlugin(TextPlugin);
+      gsap.to('.lead', {duration: 2, text: 'Informatics Student | Programmer'})
+    </script>
 
     <script>
       const scriptURL = 'https://script.google.com/macros/s/AKfycbzEMnIEgSrXlyyZT-ukT17WJrEMOWYIsXroJrhEPQRSElX2SujjgBQGsZO42zoTbGQ/exec'
