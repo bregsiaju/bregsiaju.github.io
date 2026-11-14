@@ -1,0 +1,283 @@
+---
+import { Image } from 'astro:assets';
+import { Icon } from 'astro-icon/components';
+import heroBg from '../assets/hero-bg.webp';
+import { profile } from '../data/profile';
+---
+
+<section id="hero" class="hero">
+  <Image
+    src={heroBg}
+    alt=""
+    class="hero-bg"
+    widths={[768, 1280, 1920, 2560]}
+    sizes="100vw"
+    loading="eager"
+    fetchpriority="high"
+  />
+
+  <div class="container hero-inner">
+    <p class="status"><span class="dot" aria-hidden="true"></span>{profile.availability}</p>
+
+    <h1>
+      <span class="hello">Hi, I’m</span>
+      {profile.name}
+    </h1>
+
+    <p class="role">
+      I’m a <span class="typed" data-roles={JSON.stringify(profile.roles)}>{profile.roles[0]}</span><span
+        class="caret"
+        aria-hidden="true"></span>
+    </p>
+
+    <p class="tagline">{profile.tagline}</p>
+
+    <div class="cta">
+      <a href="#projects" class="btn btn-primary">
+        View my work <Icon name="bx:right-arrow-alt" aria-hidden="true" />
+      </a>
+      <a href={profile.cvUrl} class="btn btn-outline" download>
+        <Icon name="bx:download" aria-hidden="true" /> Download CV
+      </a>
+    </div>
+
+    <ul class="social" aria-label="Social links">
+      {
+        profile.socials.map((s) => (
+          <li>
+            <a href={s.href} target="_blank" rel="noopener" aria-label={s.label}>
+              <Icon name={s.icon} aria-hidden="true" />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    padding: 96px 0 64px;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top right;
+    z-index: -2;
+  }
+
+  /* Same soft white wash as the original design, slightly stronger on the text side */
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(100deg, rgba(255, 255, 255, 0.94) 35%, rgba(255, 255, 255, 0.72));
+  }
+
+  .hero-inner {
+    max-width: var(--container);
+  }
+
+  @media (min-width: 992px) {
+    .hero-inner {
+      padding-left: 60px;
+    }
+  }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-accent);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--c-heading);
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--c-border);
+    padding: 6px 14px;
+    border-radius: var(--radius-pill);
+    margin-bottom: 22px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #18b665;
+    box-shadow: 0 0 0 0 rgba(24, 182, 101, 0.6);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    70% {
+      box-shadow: 0 0 0 8px rgba(24, 182, 101, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(24, 182, 101, 0);
+    }
+  }
+
+  h1 {
+    font-size: clamp(2.2rem, 6vw, 4rem);
+    font-weight: 700;
+    line-height: 1.08;
+    margin: 0;
+    max-width: 14ch;
+  }
+
+  .hello {
+    display: block;
+    font-family: var(--font-accent);
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    font-weight: 500;
+    color: var(--c-primary);
+    margin-bottom: 8px;
+  }
+
+  .role {
+    font-family: var(--font-accent);
+    font-size: clamp(1.15rem, 2.6vw, 1.6rem);
+    color: var(--c-heading);
+    margin: 16px 0 0;
+    min-height: 1.6em;
+  }
+
+  .typed {
+    color: var(--c-primary);
+    letter-spacing: 0.5px;
+  }
+
+  .caret {
+    display: inline-block;
+    width: 2px;
+    height: 1.1em;
+    margin-left: 3px;
+    vertical-align: -0.15em;
+    background: var(--c-primary);
+    animation: blink 1s steps(2, start) infinite;
+  }
+
+  @keyframes blink {
+    to {
+      visibility: hidden;
+    }
+  }
+
+  .tagline {
+    max-width: 560px;
+    font-size: clamp(1rem, 1.6vw, 1.1rem);
+    color: var(--c-muted);
+    margin: 18px 0 30px;
+  }
+
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .social {
+    display: flex;
+    gap: 6px;
+    list-style: none;
+    padding: 0;
+    margin: 30px 0 0;
+  }
+
+  .social a {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--c-heading);
+    transition:
+      color 0.25s,
+      background 0.25s;
+  }
+
+  .social a:hover {
+    color: var(--c-primary);
+    background: var(--c-primary-soft);
+  }
+
+  .social svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  @media (max-width: 575.98px) {
+    .hero {
+      text-align: center;
+    }
+
+    h1 {
+      margin-inline: auto;
+    }
+
+    .tagline {
+      margin-inline: auto;
+    }
+
+    .cta,
+    .social {
+      justify-content: center;
+    }
+
+    .cta .btn {
+      flex: 1 1 100%;
+    }
+
+    .hero::before {
+      background: rgba(255, 255, 255, 0.9);
+    }
+  }
+</style>
+
+<script>
+  // Lightweight replacement for typed.js
+  const el = document.querySelector<HTMLElement>('.typed');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (el && !reduce) {
+    const roles: string[] = JSON.parse(el.dataset.roles || '[]');
+    let i = 0;
+    let text = roles[0] ?? '';
+    let deleting = true;
+
+    const tick = () => {
+      if (deleting) {
+        text = text.slice(0, -1);
+        if (!text) {
+          deleting = false;
+          i = (i + 1) % roles.length;
+        }
+        el.textContent = text;
+        setTimeout(tick, 45);
+      } else {
+        text = roles[i].slice(0, text.length + 1);
+        el.textContent = text;
+        if (text === roles[i]) {
+          deleting = true;
+          setTimeout(tick, 1800);
+        } else {
+          setTimeout(tick, 85);
+        }
+      }
+    };
+
+    setTimeout(tick, 2200);
+  }
+</script>

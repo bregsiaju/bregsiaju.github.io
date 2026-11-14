@@ -1,0 +1,122 @@
+---
+import SectionTitle from './SectionTitle.astro';
+import ProjectCard from './ProjectCard.astro';
+import { projects, categoryLabels, type Category } from '../data/projects';
+
+const filters: { key: 'all' | Category; label: string; count: number }[] = [
+  { key: 'all', label: 'All', count: projects.length },
+  ...(Object.keys(categoryLabels) as Category[]).map((key) => ({
+    key,
+    label: categoryLabels[key],
+    count: projects.filter((p) => p.category === key).length,
+  })),
+].filter((f) => f.count > 0);
+---
+
+<section id="projects" class="projects">
+  <div class="container">
+    <SectionTitle eyebrow="Selected work" title="Projects">
+      From production platforms used by thousands of people to the bootcamp and university projects where I learned
+      the craft.
+    </SectionTitle>
+
+    <div class="filters" role="group" aria-label="Filter projects" data-reveal>
+      {
+        filters.map((f, i) => (
+          <button type="button" data-filter={f.key} aria-pressed={i === 0 ? 'true' : 'false'}>
+            {f.label}
+            <span class="count">{f.count}</span>
+          </button>
+        ))
+      }
+    </div>
+
+    <div class="grid" aria-live="polite">
+      {projects.map((p, i) => <ProjectCard project={p} index={i} />)}
+    </div>
+  </div>
+</section>
+
+<style>
+  .projects {
+    background: var(--c-bg-soft);
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto 36px;
+    padding: 5px;
+    background: var(--c-surface);
+    border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .filters button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 0;
+    background: transparent;
+    padding: 9px 16px;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-accent);
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--c-text);
+    cursor: pointer;
+    transition:
+      background 0.25s,
+      color 0.25s;
+  }
+
+  .filters button:hover {
+    color: var(--c-primary);
+  }
+
+  .filters button[aria-pressed='true'] {
+    background: var(--c-primary);
+    color: #fff;
+  }
+
+  .count {
+    font-size: 0.7rem;
+    min-width: 20px;
+    padding: 1px 6px;
+    border-radius: var(--radius-pill);
+    background: rgba(69, 80, 91, 0.1);
+  }
+
+  [aria-pressed='true'] .count {
+    background: rgba(255, 255, 255, 0.22);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 310px), 1fr));
+    gap: 24px;
+  }
+</style>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  const cards = document.querySelectorAll<HTMLElement>('.projects [data-category]');
+
+  buttons.forEach((btn) =>
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.filter;
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      cards.forEach((card) => {
+        const show = key === 'all' || card.dataset.category === key;
+        card.hidden = !show;
+        if (show) card.classList.add('is-visible');
+      });
+    }),
+  );
+</script>
