@@ -1,0 +1,124 @@
+---
+import { Icon } from 'astro-icon/components';
+import { profile } from '../data/profile';
+
+const year = new Date().getFullYear();
+const footerSocials = [
+  ...profile.socials.filter((s) => ['LinkedIn', 'GitHub', 'Instagram'].includes(s.label)),
+  { label: 'Email', href: `mailto:${profile.email}`, icon: 'bx:envelope' },
+];
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="footer-name">{profile.name}</p>
+    <p class="footer-tag">{profile.title} · {profile.location}</p>
+    <div class="footer-social">
+      {
+        footerSocials.map((s) => (
+          <a href={s.href} target="_blank" rel="noopener" aria-label={s.label}>
+            <Icon name={s.icon} aria-hidden="true" />
+          </a>
+        ))
+      }
+    </div>
+    <p class="copyright">&copy; {year} {profile.name}. Built with 💖</p>
+  </div>
+</footer>
+
+<a href="#top" class="back-to-top" aria-label="Back to top">
+  <Icon name="bx:up-arrow-alt" aria-hidden="true" />
+</a>
+
+<style>
+  .site-footer {
+    background: var(--c-bg-soft);
+    color: var(--c-heading);
+    text-align: center;
+    padding: 40px 0 32px;
+    font-size: 14px;
+    border-top: 1px solid var(--c-border);
+  }
+
+  .footer-name {
+    font-family: var(--font-accent);
+    font-weight: 600;
+    font-size: 1.15rem;
+    margin: 0 0 2px;
+  }
+
+  .footer-tag {
+    color: var(--c-muted);
+    margin-bottom: 20px;
+  }
+
+  .footer-social {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .footer-social a {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--c-primary);
+    color: #fff;
+    transition:
+      background 0.25s,
+      transform 0.25s var(--ease);
+  }
+
+  .footer-social a:hover {
+    background: var(--c-primary-hover);
+    transform: translateY(-3px);
+  }
+
+  .footer-social svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .copyright {
+    margin: 0;
+    color: var(--c-muted);
+  }
+
+  .back-to-top {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 996;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--c-primary);
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(5, 99, 187, 0.3);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s var(--ease);
+  }
+
+  .back-to-top:hover {
+    background: var(--c-primary-hover);
+    color: #fff;
+  }
+
+  .back-to-top svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  :global(.scrolled) .back-to-top {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+</style>

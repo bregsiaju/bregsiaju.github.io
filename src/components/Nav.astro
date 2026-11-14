@@ -1,0 +1,231 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  /** true on the homepage: links scroll within the page. false: links go back to the homepage sections. */
+  home?: boolean;
+}
+const { home = true } = Astro.props;
+const prefix = home ? '' : '/';
+
+const links = [
+  { id: 'hero', label: 'Home', icon: 'bx:home' },
+  { id: 'about', label: 'About', icon: 'bx:user' },
+  { id: 'projects', label: 'Projects', icon: 'bx:briefcase' },
+  { id: 'resume', label: 'Resume', icon: 'bx:file-blank' },
+  { id: 'certificates', label: 'Certificates', icon: 'bx:award' },
+  { id: 'contact', label: 'Contact', icon: 'bx:envelope' },
+];
+---
+
+<button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">
+  <Icon name="bx:menu" class="i-open" aria-hidden="true" />
+  <Icon name="bx:x" class="i-close" aria-hidden="true" />
+</button>
+
+<header class="site-header" id="site-nav">
+  <nav aria-label="Main">
+    <ul>
+      {
+        links.map((l) => (
+          <li>
+            <a href={`${prefix}#${l.id}`} data-nav={l.id} class={home && l.id === 'hero' ? 'active' : undefined}>
+              <Icon name={l.icon} aria-hidden="true" />
+              <span>{l.label}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>
+<div class="nav-backdrop" hidden></div>
+
+<style>
+  .site-header {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 9997;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 15px;
+    overflow-y: auto;
+    transition: transform 0.4s var(--ease);
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  li {
+    position: relative;
+    white-space: nowrap;
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--c-heading);
+    padding: 10px 18px;
+    margin-bottom: 8px;
+    font-size: 15px;
+    border-radius: var(--radius-pill);
+    background: #f2f3f5;
+    height: 56px;
+    width: 100%;
+    overflow: hidden;
+    transition:
+      width 0.3s var(--ease),
+      background 0.3s,
+      color 0.3s;
+  }
+
+  a svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  a:hover,
+  a.active {
+    color: #fff;
+    background: var(--c-primary);
+  }
+
+  /* Desktop: compact round pills that expand on hover */
+  @media (min-width: 992px) {
+    a {
+      width: 56px;
+      padding: 10px 18px;
+    }
+
+    a span {
+      display: none;
+    }
+
+    a:hover,
+    a:focus-visible {
+      width: 100%;
+      padding-right: 22px;
+    }
+
+    a:hover span,
+    a:focus-visible span {
+      display: block;
+    }
+
+    .nav-toggle,
+    .nav-backdrop {
+      display: none !important;
+    }
+  }
+
+  /* Mobile: slide-in drawer */
+  @media (max-width: 991.98px) {
+    .site-header {
+      width: 280px;
+      background: #fff;
+      border-right: 1px solid var(--c-border);
+      transform: translateX(-100%);
+      visibility: hidden;
+      transition:
+        transform 0.35s var(--ease),
+        visibility 0s 0.35s;
+    }
+
+    :global(.nav-open) .site-header {
+      transform: none;
+      visibility: visible;
+      transition: transform 0.35s var(--ease);
+    }
+
+    :global(.nav-open) {
+      overflow: hidden;
+    }
+  }
+
+  .nav-toggle {
+    position: fixed;
+    right: 14px;
+    top: 14px;
+    z-index: 9998;
+    width: 46px;
+    height: 46px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--c-heading);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+  }
+
+  .nav-toggle svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  .nav-toggle .i-close,
+  :global(.nav-open) .nav-toggle .i-open {
+    display: none;
+  }
+
+  :global(.nav-open) .nav-toggle {
+    background: var(--c-primary);
+    color: #fff;
+  }
+
+  :global(.nav-open) .nav-toggle .i-close {
+    display: block;
+  }
+
+  .nav-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 9996;
+    background: rgba(39, 40, 41, 0.35);
+  }
+</style>
+
+<script>
+  const root = document.documentElement;
+  const toggle = document.querySelector<HTMLButtonElement>('.nav-toggle');
+  const backdrop = document.querySelector<HTMLElement>('.nav-backdrop');
+
+  function setOpen(open: boolean) {
+    root.classList.toggle('nav-open', open);
+    toggle?.setAttribute('aria-expanded', String(open));
+    toggle?.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    if (backdrop) backdrop.hidden = !open;
+  }
+
+  toggle?.addEventListener('click', () => setOpen(!root.classList.contains('nav-open')));
+  backdrop?.addEventListener('click', () => setOpen(false));
+  document.addEventListener('keydown', (e) => e.key === 'Escape' && setOpen(false));
+  document.querySelectorAll('.site-header a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+
+  // Scroll-spy: highlight the section currently in view
+  const navLinks = new Map<string, HTMLElement>();
+  document.querySelectorAll<HTMLElement>('[data-nav]').forEach((a) => navLinks.set(a.dataset.nav!, a));
+  const sections = [...navLinks.keys()].map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
+
+  if (sections.length) {
+    const spy = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          navLinks.forEach((a) => a.classList.remove('active'));
+          navLinks.get(entry.target.id)?.classList.add('active');
+        });
+      },
+      { rootMargin: '-45% 0px -50% 0px' },
+    );
+    sections.forEach((s) => spy.observe(s));
+  }
+</script>

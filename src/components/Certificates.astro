@@ -1,0 +1,137 @@
+---
+import { Icon } from 'astro-icon/components';
+import SectionTitle from './SectionTitle.astro';
+import { certificates } from '../data/profile';
+---
+
+<section id="certificates" class="certificates">
+  <div class="container">
+    <SectionTitle eyebrow="Credentials" title="Certificates">
+      National certification, cloud fundamentals, language proficiency, and the bootcamp that started it all.
+    </SectionTitle>
+
+    <ul class="grid">
+      {
+        certificates.map((c, i) => (
+          <li class="cert" data-reveal style={`--reveal-delay: ${(i % 3) * 0.08}s`}>
+            <span class="badge">
+              <Icon name={c.icon ?? 'bx:certification'} aria-hidden="true" />
+            </span>
+            <div class="info">
+              <p class="issuer">
+                {c.issuer} · <time>{c.date}</time>
+              </p>
+              <h3>{c.title}</h3>
+              {c.credentialId && <p class="cred">Credential ID: {c.credentialId}</p>}
+              {c.tags && (
+                <ul class="tags">
+                  {c.tags.map((t) => (
+                    <li class="tag">{t}</li>
+                  ))}
+                </ul>
+              )}
+              {c.url && (
+                <a href={c.url} target="_blank" rel="noopener" class="view">
+                  View certificate <Icon name="bx:link-external" aria-hidden="true" />
+                </a>
+              )}
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .grid {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+    gap: 20px;
+  }
+
+  .cert {
+    display: flex;
+    gap: 16px;
+    padding: 22px;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    background: var(--c-surface);
+    transition:
+      box-shadow 0.3s,
+      border-color 0.3s,
+      transform 0.3s var(--ease);
+  }
+
+  .cert:hover {
+    border-color: transparent;
+    box-shadow: var(--shadow);
+    transform: translateY(-4px);
+  }
+
+  .badge {
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    background: var(--c-primary-soft);
+    color: var(--c-primary);
+    transition:
+      background 0.3s,
+      color 0.3s;
+  }
+
+  .cert:hover .badge {
+    background: var(--c-primary);
+    color: #fff;
+  }
+
+  .badge svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .issuer {
+    font-family: var(--font-accent);
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--c-muted);
+    margin-bottom: 4px;
+  }
+
+  h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .cred {
+    font-size: 0.8rem;
+    color: var(--c-muted);
+    margin: -4px 0 10px;
+  }
+
+  .view {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 12px;
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+
+  .view svg {
+    width: 16px;
+    height: 16px;
+  }
+</style>

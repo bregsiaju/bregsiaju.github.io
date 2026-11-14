@@ -1,0 +1,541 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { Image, getImage } from 'astro:assets';
+import { Icon } from 'astro-icon/components';
+import Base from '../../layouts/Base.astro';
+import { projects, categoryLabels } from '../../data/projects';
+
+export const getStaticPaths = (() =>
+  projects.map((project, i) => ({
+    params: { slug: project.slug },
+    props: {
+      project,
+      prev: projects[(i - 1 + projects.length) % projects.length],
+      next: projects[(i + 1) % projects.length],
+    },
+  }))) satisfies GetStaticPaths;
+
+const { project: p, prev, next } = Astro.props;
+const gallery = p.gallery ?? [];
+const og = p.cover ? await getImage({ src: p.cover, width: 1200, format: 'jpeg' }) : undefined;
+---
+
+<Base title={`${p.title} — Bregsi AJ`} description={p.tagline} home={false} image={og?.src}>
+  <article class="detail">
+    <div class="container">
+      <a href="/#projects" class="back">
+        <Icon name="bx:left-arrow-alt" aria-hidden="true" /> All projects
+      </a>
+
+      <header class="head">
+        <div class="meta">
+          <span class="cat">{categoryLabels[p.category]}</span>
+          <span class="context">{p.context}</span>
+        </div>
+        <h1>{p.title}</h1>
+        <p class="tagline">{p.tagline}</p>
+        {
+          p.links && p.links.length > 0 && (
+            <div class="actions">
+              {p.links.map((l, i) => (
+                <a href={l.href} target="_blank" rel="noopener" class={`btn ${i === 0 ? 'btn-primary' : 'btn-outline'}`}>
+                  <Icon name={l.icon} aria-hidden="true" /> {l.label}
+                </a>
+              ))}
+            </div>
+          )
+        }
+      </header>
+
+      {
+        gallery.length > 0 && (
+          <div class="gallery" data-gallery>
+            <div class="track" tabindex="0" aria-label={`${p.title} screenshots`}>
+              {gallery.map((g, i) => (
+                <figure class="slide">
+                  <Image
+                    src={g.src}
+                    alt={g.alt}
+                    widths={[640, 960, 1400]}
+                    sizes="(min-width: 1200px) 1000px, 94vw"
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                  />
+                </figure>
+              ))}
+            </div>
+            {gallery.length > 1 && (
+              <div class="gallery-nav">
+                <button type="button" data-dir="-1" aria-label="Previous screenshot">
+                  <Icon name="bx:chevron-left" aria-hidden="true" />
+                </button>
+                <span class="dots">
+                  {gallery.map((_, i) => (
+                    <button type="button" data-index={i} aria-label={`Screenshot ${i + 1}`} aria-current={i === 0 ? 'true' : undefined} />
+                  ))}
+                </span>
+                <button type="button" data-dir="1" aria-label="Next screenshot">
+                  <Icon name="bx:chevron-right" aria-hidden="true" />
+                </button>
+              </div>
+            )}
+          </div>
+        )
+      }
+
+      <div class="layout">
+        <div class="main">
+          {
+            p.metrics && (
+              <ul class="metrics">
+                {p.metrics.map((m) => (
+                  <li>
+                    <strong>{m.value}</strong>
+                    <span>{m.label}</span>
+                  </li>
+                ))}
+              </ul>
+            )
+          }
+
+          <h2>Overview</h2>
+          <p>{p.overview}</p>
+
+          {
+            p.highlights && (
+              <>
+                <h2>What I did</h2>
+                <ul class="highlights">
+                  {p.highlights.map((h) => (
+                    <li>
+                      <Icon name="bx:check-circle" aria-hidden="true" />
+                      <span set:html={h} />
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )
+          }
+
+          {
+            p.note && (
+              <p class="note">
+                <Icon name="bx:info-circle" aria-hidden="true" />
+                {p.note}
+              </p>
+            )
+          }
+        </div>
+
+        <aside class="info">
+          <h2>Project info</h2>
+          <dl>
+            <dt>Role</dt>
+            <dd>{p.role}</dd>
+            <dt>Type</dt>
+            <dd>{categoryLabels[p.category]}</dd>
+            <dt>Context</dt>
+            <dd>{p.context}</dd>
+            <dt>Tech stack</dt>
+            <dd>
+              <ul class="tags">
+                {p.stack.map((s) => <li class="tag">{s}</li>)}
+              </ul>
+            </dd>
+          </dl>
+        </aside>
+      </div>
+
+      <nav class="pager" aria-label="More projects">
+        <a href={`/projects/${prev.slug}/`}>
+          <small><Icon name="bx:left-arrow-alt" aria-hidden="true" /> Previous</small>
+          <span>{prev.title}</span>
+        </a>
+        <a href={`/projects/${next.slug}/`} class="next">
+          <small>Next <Icon name="bx:right-arrow-alt" aria-hidden="true" /></small>
+          <span>{next.title}</span>
+        </a>
+      </nav>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .detail {
+    padding: clamp(72px, 9vw, 96px) 0 72px;
+  }
+
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-accent);
+    font-weight: 500;
+    margin-bottom: 24px;
+  }
+
+  .back svg {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.25s var(--ease);
+  }
+
+  .back:hover svg {
+    transform: translateX(-4px);
+  }
+
+  .head {
+    max-width: 760px;
+    margin-bottom: 32px;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .cat {
+    font-family: var(--font-accent);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--c-primary);
+    background: var(--c-primary-soft);
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+  }
+
+  .context {
+    font-size: 0.9rem;
+    color: var(--c-muted);
+  }
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .tagline {
+    font-size: 1.1rem;
+    color: var(--c-muted);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  /* Gallery — CSS scroll-snap, no slider library */
+  .gallery {
+    margin-bottom: 40px;
+  }
+
+  .track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    border-radius: var(--radius);
+    background: var(--c-bg-soft);
+    box-shadow: var(--shadow);
+    scrollbar-width: none;
+  }
+
+  .track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .slide {
+    flex: 0 0 100%;
+    margin: 0;
+    scroll-snap-align: center;
+    display: grid;
+    place-items: center;
+  }
+
+  .slide img {
+    width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+  }
+
+  .gallery-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 14px;
+  }
+
+  .gallery-nav > button {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--c-border);
+    border-radius: 50%;
+    background: #fff;
+    color: var(--c-heading);
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+
+  .gallery-nav > button:hover {
+    background: var(--c-primary);
+    border-color: var(--c-primary);
+    color: #fff;
+  }
+
+  .gallery-nav svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .dots {
+    display: flex;
+    gap: 8px;
+  }
+
+  .dots button {
+    width: 12px;
+    height: 12px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid var(--c-primary);
+    background: #fff;
+    cursor: pointer;
+    transition: background 0.25s;
+  }
+
+  .dots button[aria-current='true'] {
+    background: var(--c-primary);
+  }
+
+  .layout {
+    display: grid;
+    gap: 32px 48px;
+  }
+
+  @media (min-width: 992px) {
+    .layout {
+      grid-template-columns: 1fr 320px;
+      align-items: start;
+    }
+
+    .info {
+      position: sticky;
+      top: 24px;
+    }
+  }
+
+  .main h2,
+  .info h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin: 0 0 12px;
+  }
+
+  .main h2:not(:first-child) {
+    margin-top: 32px;
+  }
+
+  .main p {
+    color: #4a5561;
+  }
+
+  .metrics {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 36px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+  }
+
+  .metrics li {
+    background: var(--c-primary-soft);
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align: center;
+  }
+
+  .metrics strong {
+    display: block;
+    font-family: var(--font-accent);
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--c-primary);
+    line-height: 1.2;
+  }
+
+  .metrics span {
+    font-size: 0.85rem;
+    color: var(--c-heading);
+  }
+
+  .highlights {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+  }
+
+  .highlights li {
+    display: flex;
+    gap: 10px;
+    color: #4a5561;
+  }
+
+  .highlights svg {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    color: var(--c-primary);
+    margin-top: 1px;
+  }
+
+  .note {
+    display: flex;
+    gap: 8px;
+    margin-top: 28px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: var(--c-bg-soft);
+    font-size: 0.92rem;
+  }
+
+  .note svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    color: var(--c-primary);
+    margin-top: 2px;
+  }
+
+  .info {
+    padding: 26px;
+    border-radius: var(--radius);
+    box-shadow: 0 0 30px rgba(69, 80, 91, 0.08);
+  }
+
+  .info h2 {
+    padding-bottom: 14px;
+    border-bottom: 1px solid #eee;
+  }
+
+  dl {
+    margin: 0;
+  }
+
+  dt {
+    font-family: var(--font-accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+    margin-top: 14px;
+  }
+
+  dd {
+    margin: 4px 0 0;
+    color: var(--c-heading);
+  }
+
+  dd .tags {
+    margin-top: 6px;
+  }
+
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 56px;
+    padding-top: 28px;
+    border-top: 1px solid var(--c-border);
+  }
+
+  .pager a {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 16px 18px;
+    border-radius: var(--radius);
+    border: 1px solid var(--c-border);
+    color: var(--c-heading);
+    transition:
+      border-color 0.25s,
+      box-shadow 0.25s;
+  }
+
+  .pager a:hover {
+    border-color: var(--c-primary);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .pager small {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--c-muted);
+    font-size: 0.8rem;
+  }
+
+  .pager small svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .pager span {
+    font-family: var(--font-heading);
+    font-weight: 700;
+  }
+
+  .pager .next {
+    text-align: right;
+    align-items: flex-end;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((gallery) => {
+    const track = gallery.querySelector<HTMLElement>('.track');
+    const dots = [...gallery.querySelectorAll<HTMLButtonElement>('[data-index]')];
+    if (!track || dots.length < 2) return;
+
+    const current = () => Math.round(track.scrollLeft / track.clientWidth);
+    const go = (i: number) => {
+      const n = (i + dots.length) % dots.length;
+      track.scrollTo({ left: n * track.clientWidth });
+    };
+
+    gallery.querySelectorAll<HTMLButtonElement>('[data-dir]').forEach((b) =>
+      b.addEventListener('click', () => go(current() + Number(b.dataset.dir))),
+    );
+    dots.forEach((d) => d.addEventListener('click', () => go(Number(d.dataset.index))));
+
+    track.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') go(current() + 1);
+      if (e.key === 'ArrowLeft') go(current() - 1);
+    });
+
+    let raf = 0;
+    track.addEventListener(
+      'scroll',
+      () => {
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => {
+          const i = current();
+          dots.forEach((d, j) => (j === i ? d.setAttribute('aria-current', 'true') : d.removeAttribute('aria-current')));
+        });
+      },
+      { passive: true },
+    );
+  });
+</script>
